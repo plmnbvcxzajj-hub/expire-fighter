@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expire Fighter - مراقب انتهاء الصلاحية</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; font-size: 24px; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
+        button { background-color: #27ae60; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #219150; }
+        .item { display: flex; justify-content: space-between; align-items: center; background: #ecf0f1; padding: 12px; margin-top: 10px; border-radius: 8px; border-right: 5px solid #27ae60; }
+        .item.soon { border-right-color: #f39c12; background: #fef9e7; }
+        .item.expired { border-right-color: #c0392b; background: #fdedec; }
+        .del-btn { background: #e74c3c; width: auto; padding: 6px 12px; font-size: 14px; margin: 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🛡️ Expire Fighter</h1>
+    <p>أضف منتجاتك وتابع تواريخ انتهاء صلاحيتها</p>
+    
+    <input type="text" id="productName" placeholder="اسم المنتج (مثلاً: حليب، دواء...)">
+    <input type="date" id="expiryDate">
+    <button onclick="addProduct()">+ إضافة المنتج</button>
+
+    <div id="productList"></div>
+</div>
+
+<script>
+    function addProduct() {
+        const name = document.getElementById('productName').value;
+        const date = document.getElementById('expiryDate').value;
+        if (!name || !date) return alert('يرجى إدخال اسم المنتج والتاريخ!');
+
+        const today = new Date();
+        const expDate = new Date(date);
+        const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+
+        let statusClass = '';
+        let statusText = `باقي ${diffDays} يوم`;
+        
+        if (diffDays < 0) {
+            statusClass = 'expired';
+            statusText = 'منتهي الصلاحية!';
+        } else if (diffDays <= 7) {
+            statusClass = 'soon';
+            statusText = `ينتهي قريباً (${diffDays} أيام)`;
+        }
+
+        const list = document.getElementById('productList');
+        const div = document.createElement('div');
+        div.className = `item ${statusClass}`;
+        div.innerHTML = `
+            <div style="text-align: right;">
+                <strong>${name}</strong><br>
+                <small>${date} — ${statusText}</small>
+            </div>
+            <button class="del-btn" onclick="this.parentElement.remove()">حذف</button>
+        `;
+        list.appendChild(div);
+
+        document.getElementById('productName').value = '';
+        document.getElementById('expiryDate').value = '';
+    }
+</script>
+
+</body>
+</html>
